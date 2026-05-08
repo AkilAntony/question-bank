@@ -1,18 +1,34 @@
 "use server";
 
+import { getDb } from "@/lib/db";
+import { moderateContent } from "@/lib/moderation";
 import { AddQuestionform } from "@/types/common";
 
 export const addQuestion = async (formData: AddQuestionform) => {
+  try {
+    const moderation = await moderateContent(formData.question, formData.answer);
 
-    console.log(formData,'testing form data in action')
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/add-resource`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    },
-  );
+    if (moderation.flagged) {
+      return {
+        message: "flagged" as const,
+        reason: moderation.reason ?? "Content was flagged by our moderation system.",
+      };
+    }
+
+    const db = await getDb();
+
+    const doc = {
+      question: formData.question,
+      answer: formData.answer,
+      tech: formData.tech,
+      difficulty: formData.difficulty,
+      createdAt: new Date().toISOString(),
+    };
+    await db.collection("questions").insertOne(doc);
+
+    return { message: "success" as const };
+  } catch (error) {
+    console.error("Error saving question:", error);
+    return { message: "error" as const };
+  }
 };

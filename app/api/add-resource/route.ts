@@ -1,16 +1,27 @@
 import { getDb } from "@/lib/db";
-import { ObjectId } from "mongodb";
+import { moderateContent } from "@/lib/moderation";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    const { question, answer, tech, difficulty } = body;
+
+    const moderation = await moderateContent(question, answer);
+
+    if (moderation.flagged) {
+      return Response.json(
+        { message: "flagged", reason: moderation.reason ?? "Content was flagged by our moderation system." },
+        { status: 400 },
+      );
+    }
+
     const db = await getDb();
 
     const doc = {
-      question: body.question,
-      answer: body.answer,
-      tech: body.tech,
-      difficulty: body.difficulty,
+      question,
+      answer,
+      tech,
+      difficulty,
       createdAt: new Date().toISOString(),
     };
 

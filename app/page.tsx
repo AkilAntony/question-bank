@@ -1,30 +1,11 @@
 import Link from "next/link";
-import { getDb } from "@/lib/db";
-import type { Question } from "@/types/common";
+ 
+import { getQuestions } from "@/app/actions/getQuestions";
+import AnswerRenderer from "@/components/AnswerRenderer";
 
 export const dynamic = "force-dynamic";
 
-async function getQuestions(): Promise<Question[]> {
-  try {
-    const db = await getDb();
-    const docs = await db
-      .collection("questions")
-      .find()
-      .sort({ createdAt: -1 })
-      .toArray();
 
-    return docs.map((doc) => ({
-      _id: doc._id.toString(),
-      question: doc.question,
-      answer: doc.answer,
-      tech: doc.tech,
-      difficulty: doc.difficulty,
-      createdAt: doc.createdAt,
-    }));
-  } catch {
-    return [];
-  }
-}
 
 const difficultyConfig: Record<string, { label: string; ring: string; bg: string; text: string }> = {
   easy: {
@@ -53,7 +34,7 @@ export default async function Home() {
   return (
     <div className="bg-[#f8fafc] min-h-screen pb-16">
       <div className="section-wrap px-4">
-        <div className="py-12 md:py-16 text-center">
+        <div className="py-8 md:py-12 text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-[#1e293b] tracking-tight">
             Interview Question Bank
           </h1>
@@ -99,12 +80,7 @@ export default async function Home() {
                     </span>
                   </div>
 
-                  {q.answer && (
-                    <div
-                      className="text-[#475569] text-sm leading-relaxed mb-5 prose prose-sm max-w-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_pre]:bg-[#1e293b] [&_pre]:text-[#e2e8f0] [&_pre]:rounded-lg [&_pre]:p-3 [&_code]:bg-[#f1f5f9] [&_code]:px-1.5 [&_code]:rounded [&_pre_code]:bg-transparent [&_pre_code]:p-0"
-                      dangerouslySetInnerHTML={{ __html: q.answer }}
-                    />
-                  )}
+                  {q.answer && <AnswerRenderer html={q.answer} />}
 
                   <div className="flex items-center justify-between text-sm pt-4 border-t border-[#e2e8f0]">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#f1f5f9] text-[#64748b] text-xs font-medium capitalize">

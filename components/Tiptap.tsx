@@ -4,13 +4,31 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { FaBold, FaCode, FaItalic, FaListUl } from "react-icons/fa";
 
+function looksLikeCode(text: string): boolean {
+  const lines = text.split("\n");
+  if (lines.length < 2) return false;
+
+  const codeIndicators = [
+    /^(function|const|let|var|import|export|def|class|interface|type|enum|if|for|while|return|public|private|using|namespace)\b/m,
+    /[{};]+/,
+    /=>/,
+    /\/\/|#|<!--/,
+    /^[a-z]+\s*\(.*\)\s*\{/m,
+    /(==|===|!=|!==|<=|>=|\+\+|--)/,
+    /<\/?\w+>/,
+    /^\s*(import|from|require)\s/m,
+  ];
+
+  return codeIndicators.some((pattern) => pattern.test(text));
+}
+
 const TiptapComponent = ({
   handleChange,
 }: {
   handleChange: (value: string) => void;
 }) => {
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit.configure({ codeBlock: { HTMLAttributes: { class: "code-block" } } })],
     immediatelyRender: false,
     content: "",
     onUpdate: ({ editor }) => {
@@ -19,6 +37,14 @@ const TiptapComponent = ({
   });
 
   if (!editor) return null;
+
+  const handlePaste = (e: ClipboardEvent) => {
+    const text = e.clipboardData?.getData("text/plain");
+    if (text && looksLikeCode(text)) {
+      e.preventDefault();
+      editor.chain().focus().clearContent().insertContent(`<pre><code>${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>`).run();
+    }
+  };
 
   const tools = [
     { icon: FaBold, action: () => editor.chain().focus().toggleBold().run(), isActive: editor.isActive("bold") },
@@ -45,7 +71,9 @@ const TiptapComponent = ({
           </button>
         ))}
       </div>
-      <EditorContent editor={editor} className="w-full" />
+      <div onPaste={handlePaste as any}>
+        <EditorContent editor={editor} className="w-full" />
+      </div>
     </div>
   );
 };

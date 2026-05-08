@@ -29,12 +29,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <header className="sticky top-0 z-50 border-b border-[#e2e8f0] bg-white/80 backdrop-blur-md">
-          <div className="section-wrap flex items-center justify-between px-4 h-16">
+        <header className="sticky top-0   z-50 border-b border-[#e2e8f0] bg-white/80 backdrop-blur-md">
+          <div className="max-w-6xl mx-auto flex items-center justify-between px-4   h-16">
             <Link href="/" className="text-lg font-bold text-[#4f46e5]">
               QBank
             </Link>
-            <nav className="flex items-center gap-4">
+            <nav className="flex items-center gap-6  ">
               <Link
                 href="/"
                 className="text-sm text-[#64748b] hover:text-[#4f46e5] transition-colors"
