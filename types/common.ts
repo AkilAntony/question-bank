@@ -1,11 +1,16 @@
 export interface AddQuestionform {
-  question : string;
-  answer : string;
+  question: string;
+  answer: string;
   tech: string;
-  difficulty :string;
+  difficulty: string;
 }
 
-export interface  Option{
-    label: string;
-    value: string | number;
-  }
+export interface Question extends AddQuestionform {
+  _id: string;
+  createdAt: string;
+}
+
+export interface Option {
+  label: string;
+  value: string | number;
+}

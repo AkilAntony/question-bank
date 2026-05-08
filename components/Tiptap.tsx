@@ -1,63 +1,51 @@
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
-import { FloatingMenu, BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
-import { FaBold, FaCode, FaItalic } from "react-icons/fa";
-import { MdFormatListBulleted } from "react-icons/md";
+import { FaBold, FaCode, FaItalic, FaListUl } from "react-icons/fa";
 
-const TiptapComponent = () => {
+const TiptapComponent = ({
+  handleChange,
+}: {
+  handleChange: (value: string) => void;
+}) => {
   const editor = useEditor({
     extensions: [StarterKit],
     immediatelyRender: false,
-    content: "<p>Hello World!</p>",
+    content: "",
+    onUpdate: ({ editor }) => {
+      handleChange(editor.getHTML());
+    },
   });
 
   if (!editor) return null;
 
-  console.log(editor.isActive("bold"), "editor");
+  const tools = [
+    { icon: FaBold, action: () => editor.chain().focus().toggleBold().run(), isActive: editor.isActive("bold") },
+    { icon: FaItalic, action: () => editor.chain().focus().toggleItalic().run(), isActive: editor.isActive("italic") },
+    { icon: FaListUl, action: () => editor.chain().focus().toggleBulletList().run(), isActive: editor.isActive("bulletList") },
+    { icon: FaCode, action: () => editor.chain().focus().toggleCodeBlock().run(), isActive: editor.isActive("codeBlock") },
+  ];
 
   return (
-    <div className="border border-gray-300  rounded">
-      {/* Toolbar */}
-      <div className="flex gap-4 mb-2 border-gray-300 justify-end   border-b p-3">
-        <button
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          type="button"
-          className={editor.isActive("bold") ? "bg-blue-500 text-white" : ""}
-        >
-          <FaBold />
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={editor.isActive("italic") ? "bg-blue-500 text-white" : ""}
-          type="button"
-        >
-          <FaItalic />
-        </button>
-
-        <button
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          type="button"
-          className={
-            editor.isActive("bulletList") ? "bg-blue-500 text-white" : ""
-          }
-        >
-          <MdFormatListBulleted />
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          // className={
-          //   editor.isActive("code") ? "bg-blue-500 text-white" : "bg-red-500"
-          // }
-          type="button"
-        >
-          <FaCode />
-        </button>
+    <div className="border border-[#e2e8f0] rounded-lg overflow-hidden">
+      <div className="flex items-center gap-1 px-2 py-2 border-b border-[#e2e8f0] bg-[#f8fafc]">
+        {tools.map((tool, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={tool.action}
+            className={`p-2 rounded-md text-sm transition-colors ${
+              tool.isActive
+                ? "bg-[#4f46e5] text-white"
+                : "text-[#64748b] hover:bg-[#e2e8f0]"
+            }`}
+          >
+            <tool.icon className="w-3.5 h-3.5" />
+          </button>
+        ))}
       </div>
-
-      {/* Editor */}
-      <EditorContent editor={editor} className=" w-full" />
+      <EditorContent editor={editor} className="w-full" />
     </div>
   );
 };

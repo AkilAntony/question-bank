@@ -1,18 +1,22 @@
 "use client";
 
+import { addQuestion } from "@/app/actions/addQuestion";
 import { InputField, OptionSelect, SelectField } from "@/components/formfields";
-import TiptapComponent from "@/components/Tiptap";
+
 import { technologies } from "@/data";
 import { AddQuestionform } from "@/types/common";
-import { validateField } from "@/utils/common";
+import { validateField } from "@/utils/validateQuestionForm";
+import dynamic from "next/dynamic";
 import { useState } from "react";
+
+const Tiptap = dynamic(() => import("@/components/Tiptap"), { ssr: false });
 
 export const AddQuestionForm = () => {
   const [formData, setFormData] = useState<AddQuestionform>({
     answer: "",
-    difficulty: "",
+    difficulty: "easy",
     question: "",
-    tech: "",
+    tech: "react",
   });
   const [error, setError] = useState<AddQuestionform>({
     answer: "",
@@ -42,52 +46,88 @@ export const AddQuestionForm = () => {
     }));
   };
 
-  console.log(formData);
+  const handleAnswerChange = (value: string) => {
+    const errorMessage = validateField("answer", value) ?? "";
+    setError((prev) => ({
+      ...prev,
+      answer: errorMessage,
+    }));
+
+    setFormData((prev) => ({
+      ...prev,
+      answer: value,
+    }));
+  };
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    addQuestion(formData);
+  };
 
   return (
-    <form>
-      <div className="md:w-[90%]  flex flex-col gap-6 mx-auto ">
-        <InputField
-          placeholder="eg : How will you resolve merge conflicts?"
-          label="Enter the quesiton"
-          value={formData?.question}
-          name="question"
-          error={error.question}
+    <form onSubmit={handleFormSubmit} className="space-y-6">
+      <InputField
+        placeholder="e.g. How do you handle merge conflicts in Git?"
+        label="Question"
+        value={formData?.question}
+        name="question"
+        error={error.question}
+        onChange={handleChange}
+      />
+
+      <div className="grid md:grid-cols-3 gap-4">
+        <SelectField
+          label="Technology"
+          error={error.tech}
+          name="tech"
+          value={formData.tech}
           onChange={handleChange}
+          options={technologies}
         />
 
-        <div className="grid md:grid-cols-3 gap-4">
-          <SelectField
-            label="Select the Technology"
-            error={error.tech}
-            name="tech"
-            value={formData.tech}
-            onChange={handleChange}
-            options={technologies}
+        <div className="md:col-span-2">
+          <OptionSelect
+            label="Difficulty"
+            required
+            value={formData.difficulty}
+            onChange={(val) => {
+              setFormData((prev) => ({
+                ...prev,
+                difficulty: val,
+              }));
+            }}
+            options={[
+              { label: "Easy", value: "easy" },
+              { label: "Medium", value: "medium" },
+              { label: "Hard", value: "hard" },
+            ]}
           />
-
-          <div className="md:col-span-2 flex gap-1 flex-col ">
-            <OptionSelect
-              label="Difficulty Level"
-              required
-              value={formData.difficulty}
-              onChange={(val) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  difficulty: val,
-                }));
-                console.log(val, "a");
-              }}
-              options={[
-                { label: "Easy", value: 1 },
-                { label: "Medium", value: 2 },
-                { label: "Hard", value: 3 },
-              ]}
-            />
-          </div>
         </div>
+      </div>
 
-        <TiptapComponent />
+      <div>
+        <label className="text-sm font-medium text-[#1e293b] mb-1.5 block">
+          Answer
+        </label>
+        <Tiptap handleChange={handleAnswerChange} />
+        {error.answer && (
+          <span className="text-rose-500 text-xs mt-1 block">{error.answer}</span>
+        )}
+      </div>
+
+      <div className="flex items-center gap-3 pt-2">
+        <button
+          type="submit"
+          className="px-6 py-2.5 rounded-lg bg-[#4f46e5] text-white text-sm font-medium hover:bg-[#4338ca] transition-colors"
+        >
+          Submit
+        </button>
+        <button
+          type="button"
+          className="px-6 py-2.5 rounded-lg border border-[#e2e8f0] text-[#64748b] text-sm font-medium hover:bg-[#f8fafc] transition-colors"
+        >
+          Cancel
+        </button>
       </div>
     </form>
   );

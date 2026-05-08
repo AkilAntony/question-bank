@@ -1,48 +1,82 @@
 @import "tailwindcss";
 
- 
+@theme {
+  --color-surface: #f8fafc;
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-primary-light: #eef2ff;
+  --color-card: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+}
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px #1f2937 inset; /* your bg color */
-  -webkit-text-fill-color: #fff; /* text color */
-  transition: background-color 5000s ease-in-out 0s;
+  -webkit-box-shadow: 0 0 0px 1000px #f8fafc inset;
 }
 
 body {
-  background: #F5F6F6 ;
-  /* backdrop-blur:  */
-  /* color: #323232; */
+  background-color: #f8fafc;
+  color: #1e293b;
   font-family: sans-serif;
 }
 
 @layer components {
   .mainTitle {
-    @apply md:text-[24px] font-bold text-center;
+    @apply text-2xl md:text-3xl font-bold text-center;
   }
 
   .subHeading {
-    @apply text-center font-medium my-2;
+    @apply text-center text-base mt-2;
   }
 
   .section-wrap {
-    @apply max-w-[1280px] w-full mx-auto;
+    @apply max-w-4xl w-full mx-auto;
+  }
+
+  .card {
+    @apply bg-white rounded-xl border border-[#e2e8f0] shadow-sm;
   }
 }
 
-
-/* tiptap input */
 .ProseMirror {
   outline: none;
   border: none;
-  padding: 10px;
-  min-height: 100px;
-  box-shadow: none;
+  padding: 12px;
+  min-height: 120px;
 }
+
 .ProseMirror ul {
   list-style-type: disc;
   padding-left: 1.5rem;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.ProseMirror pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.ProseMirror code {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.ProseMirror pre code {
+  background: none;
+  padding: 0;
 }
