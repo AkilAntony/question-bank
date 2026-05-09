@@ -14,3 +14,15 @@ export interface Option {
   label: string;
   value: string | number;
 }
+
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+  createdAt: string;
+}
+
+export type AuthState =
+  | { errors?: { name?: string; email?: string; password?: string }; message?: string }
+  | undefined;

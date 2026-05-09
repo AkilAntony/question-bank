@@ -3,9 +3,15 @@
 import { getDb } from "@/lib/db";
 import { moderateContent } from "@/lib/moderation";
 import { AddQuestionform } from "@/types/common";
+import { getCurrentUserId } from "@/app/actions/auth";
 
 export const addQuestion = async (formData: AddQuestionform) => {
   try {
+    const userId = await getCurrentUserId();
+    if (!userId) {
+      return { message: "error" as const };
+    }
+
     const moderation = await moderateContent(formData.question, formData.answer);
 
     if (moderation.flagged) {

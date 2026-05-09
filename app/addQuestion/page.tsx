@@ -1,6 +1,11 @@
 import { AddQuestionForm } from "@/components/addQuestion/AddQuestionForm";
+import { getSession } from "@/lib/session";
+import { redirect } from "next/navigation";
 
-const page = () => {
+const page = async () => {
+  const session = await getSession();
+  if (!session?.userId) redirect("/login");
+
   return (
     <div className="bg-[#f8fafc] min-h-screen pb-12">
       <div className="section-wrap px-4 pt-10">
