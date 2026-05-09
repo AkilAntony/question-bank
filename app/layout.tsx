@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+import { getSession } from "@/lib/session";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,11 +19,14 @@ export const metadata: Metadata = {
   description: "Interview questions and answers shared by the community",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getSession();
+  const isLoggedIn = !!session?.userId;
+
   return (
     <html
       lang="en"
@@ -41,12 +45,31 @@ export default function RootLayout({
               >
                 Browse
               </Link>
-              <Link
-                href="/addQuestion"
-                className="text-sm px-4 py-2 rounded-lg bg-[#4f46e5] text-white hover:bg-[#4338ca] transition-colors font-medium"
-              >
-                + Add Question
-              </Link>
+              {isLoggedIn ? (
+                <>
+                  <Link
+                    href="/addQuestion"
+                    className="text-sm px-4 py-2 rounded-lg bg-[#4f46e5] text-white hover:bg-[#4338ca] transition-colors font-medium"
+                  >
+                    + Add Question
+                  </Link>
+                  <form action="/api/auth/logout" method="post">
+                    <button
+                      type="submit"
+                      className="text-sm text-[#64748b] hover:text-[#4f46e5] transition-colors cursor-pointer"
+                    >
+                      Log Out
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="text-sm px-4 py-2 rounded-lg bg-[#4f46e5] text-white hover:bg-[#4338ca] transition-colors font-medium"
+                >
+                  Log In
+                </Link>
+              )}
             </nav>
           </div>
         </header>
