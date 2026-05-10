@@ -29,7 +29,7 @@ export async function signup(state: AuthState, formData: FormData): Promise<Auth
     email,
     password: hashedPassword,
     createdAt: new Date().toISOString(),
-    role : ''
+    role : 'user'
   });
 
   await createSession(result.insertedId.toString());

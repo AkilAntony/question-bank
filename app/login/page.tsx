@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LoginForm } from "./LoginForm";
 
 export default function LoginPage() {
@@ -11,7 +12,9 @@ export default function LoginPage() {
               Log in to continue sharing interview questions
             </p>
           </div>
-          <LoginForm />
+          <Suspense fallback={<div className="h-64" />}>
+            <LoginForm />
+          </Suspense>
         </div>
       </div>
     </div>
