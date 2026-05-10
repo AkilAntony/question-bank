@@ -51,6 +51,7 @@ export async function GET(req: NextRequest) {
         email,
         googleId,
         createdAt: new Date().toISOString(),
+        role : 'user'
       });
       user = { _id: result.insertedId };
     }
